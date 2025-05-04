@@ -102,7 +102,7 @@ vim.g.have_nerd_font = false
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -410,7 +410,6 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
-
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
         -- You can pass additional configuration to Telescope to change the theme, layout, etc.
@@ -896,7 +895,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'diff', 'javascript', 'json', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'python', 'go' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -907,6 +906,34 @@ require('lazy').setup({
         additional_vim_regex_highlighting = { 'ruby' },
       },
       indent = { enable = true, disable = { 'ruby' } },
+      textobjects = {
+        select = {
+          enable = true,
+          lookahead = true,
+          keymaps = {
+            ['af'] = '@function.outer',
+            ['if'] = '@function.inner',
+            ['ac'] = '@class.outer',
+            ['ic'] = '@class.inner',
+          },
+        },
+        move = {
+          enable = true,
+          set_jumps = true, -- usually you want this true for jump list
+          goto_next_start = {
+            [']f'] = '@function.outer',
+            [']c'] = '@class.outer',
+            [']p'] = '@parameter.inner',
+            [']m'] = '@method.outer',
+          },
+          goto_previous_start = {
+            ['[f'] = '@function.outer',
+            ['[c'] = '@class.outer',
+            ['[p'] = '@parameter.inner',
+            ['[m'] = '@method.outer',
+          }
+        }
+      },
     },
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:
@@ -914,6 +941,43 @@ require('lazy').setup({
     --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
     --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+  },
+  {
+    "nvim-treesitter/nvim-treesitter-textobjects",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    after = "nvim-treesitter",
+    textobjects = {
+      move = {
+        enable = true,
+        set_jumps = true,
+        goto_next_start = {
+          ["]a"] = "@parameter.inner",
+        },
+        goto_previous_start = {
+          ["[a"] = "@parameter.inner",
+        },
+      }
+     
+    }
+  },
+  {
+    "nvim-treesitter/nvim-treesitter-context",
+    enable = true,
+    multiwindow = false,
+    max_lines = 0,
+    min_window_height = 0,
+    line_numbers = true,
+    multiline_threshold = 20,
+    trim_scope = 'outer',
+    mode = 'cursor',
+    separator = nil,
+    zindex = 20,
+    on_attach = nil,
+    config = function()
+      vim.keymap.set('n', '<leader><Up>', function()
+        require('treesitter-context').go_to_context(vim.v.count1)
+      end, { desc = 'Go to [c]ontext' })
+    end,
   },
   {
     "folke/snacks.nvim",
@@ -950,7 +1014,15 @@ require('lazy').setup({
       }
     }
   },
-
+  -- {
+  --   "stevearc/aerial.nvim",
+  --   opts = {
+  --     layout = {
+  --       min_width = 30,
+  --       default_direction = "prefer_right",
+  --     },
+  --   },
+  -- },
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
@@ -999,5 +1071,40 @@ require('lazy').setup({
   },
 })
 
+-- LSP keymaps
+vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { desc = 'Go to Definition' })
+vim.keymap.set('n', 'gr', vim.lsp.buf.references, { desc = 'Go to References' })
+vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, { desc = 'Go to Implementation' })
+vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, { desc = 'Rename Symbol' })
+vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, { desc = 'Code Action' })
+vim.keymap.set('n', 'K', vim.lsp.buf.hover, { desc = 'Hover Documentation' })
+
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+
+
+-- Shift+Down: Start visual mode and select next line (normal mode)
+vim.keymap.set('n', '<S-Down>', 'vj', { desc = 'Visual select down' })
+-- Shift+Down: Extend visual selection down (visual mode)
+vim.keymap.set('v', '<S-Down>', 'j', { desc = 'Extend selection down' })
+
+-- Shift+Up: Start visual mode and select previous line (normal mode)
+vim.keymap.set('n', '<S-Up>', 'vk', { desc = 'Visual select up' })
+-- Shift+Up: Extend visual selection up (visual mode)
+vim.keymap.set('v', '<S-Up>', 'k', { desc = 'Extend selection up' })
+
+-- Shift+Left: Start visual mode and select previous character (normal mode)
+vim.keymap.set('n', '<S-Left>', 'vh', { desc = 'Visual select left' })
+-- Shift+Left: Extend visual selection left (visual mode)
+vim.keymap.set('v', '<S-Left>', 'h', { desc = 'Extend selection left' })
+
+-- Shift+Right: Start visual mode and select next character (normal mode)
+vim.keymap.set('n', '<S-Right>', 'vl', { desc = 'Visual select right' })
+-- Shift+Right: Extend visual selection right (visual mode)
+vim.keymap.set('v', '<S-Right>', 'l', { desc = 'Extend selection right' })
+
+
+-- Ctrl+Down: Move half a page down (normal mode)
+vim.keymap.set('n', '<C-Down>', '<C-d>', { desc = 'Move half page down' })
+-- Ctrl+Up: Move half a page up (normal mode)
+vim.keymap.set('n', '<C-Up>', '<C-u>', { desc = 'Move half page up' })

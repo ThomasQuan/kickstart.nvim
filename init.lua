@@ -330,7 +330,6 @@ require('lazy').setup({
   -- you do for a plugin at the top level, you can do for a dependency.
   --
   -- Use the `dependencies` key to specify the dependencies of a particular plugin
-
   { -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
     event = 'VimEnter',
@@ -931,8 +930,8 @@ require('lazy').setup({
             ['[c'] = '@class.outer',
             ['[p'] = '@parameter.inner',
             ['[m'] = '@method.outer',
-          }
-        }
+          },
+        },
       },
     },
     -- There are additional nvim-treesitter modules that you can use to interact
@@ -943,49 +942,121 @@ require('lazy').setup({
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
   },
   {
-    "nvim-treesitter/nvim-treesitter-textobjects",
-    dependencies = { "nvim-treesitter/nvim-treesitter" },
-    after = "nvim-treesitter",
+    'nvim-treesitter/nvim-treesitter-textobjects',
+    dependencies = { 'nvim-treesitter/nvim-treesitter' },
+    after = 'nvim-treesitter',
     textobjects = {
       move = {
         enable = true,
         set_jumps = true,
         goto_next_start = {
-          ["]a"] = "@parameter.inner",
+          [']a'] = '@parameter.inner',
         },
         goto_previous_start = {
-          ["[a"] = "@parameter.inner",
+          ['[a'] = '@parameter.inner',
         },
-      }
-     
-    }
+      },
+    },
   },
   {
-    "nvim-treesitter/nvim-treesitter-context",
-    enable = true,
-    multiwindow = false,
-    max_lines = 0,
-    min_window_height = 0,
-    line_numbers = true,
-    multiline_threshold = 20,
-    trim_scope = 'outer',
-    mode = 'cursor',
-    separator = nil,
-    zindex = 20,
-    on_attach = nil,
-    config = function()
-      vim.keymap.set('n', '<leader><Up>', function()
-        require('treesitter-context').go_to_context(vim.v.count1)
-      end, { desc = 'Go to [c]ontext' })
-    end,
+    'kawre/leetcode.nvim',
+    dependencies = {
+      'nvim-telescope/telescope.nvim',
+      'nvim-lua/plenary.nvim',
+      'MunifTanjim/nui.nvim',
+    },
+    opts = {
+      ---@type string
+      arg = 'leetcode.nvim',
+
+      ---@type lc.lang
+      lang = 'cpp',
+
+      cn = { -- leetcode.cn
+        enabled = false,
+        translator = true,
+        translate_problems = true,
+      },
+
+      ---@type lc.storage
+      storage = {
+        home = vim.fn.stdpath 'data' .. '/leetcode',
+        cache = vim.fn.stdpath 'cache' .. '/leetcode',
+      },
+
+      ---@type table<string, boolean>
+      plugins = {
+        non_standalone = true,
+      },
+
+      ---@type boolean
+      logging = true,
+
+      injector = {}, ---@type table<lc.lang, lc.inject>
+
+      cache = {
+        update_interval = 60 * 60 * 24 * 7, ---@type integer 7 days
+      },
+
+      console = {
+        open_on_runcode = true,
+        dir = 'row',
+        size = {
+          width = '90%',
+          height = '75%',
+        },
+        result = {
+          size = '60%',
+        },
+        testcase = {
+          virt_text = true,
+          size = '40%',
+        },
+      },
+
+      description = {
+        position = 'left',
+        width = '40%',
+        show_stats = true,
+      },
+
+      ---@type lc.picker
+      picker = { provider = 'telescope' },
+
+      hooks = {
+        ---@type fun()[]
+        ['enter'] = {},
+
+        ---@type fun(question: lc.ui.Question)[]
+        ['question_enter'] = {},
+
+        ---@type fun()[]
+        ['leave'] = {},
+      },
+
+      keys = {
+        toggle = { 'q' },
+        confirm = { '<CR>' },
+        reset_testcases = 'r',
+        use_testcase = 'U',
+        focus_testcases = 'H',
+        focus_result = 'L',
+      },
+
+      ---@type lc.highlights
+      theme = {},
+
+      ---@type boolean
+      image_support = false,
+    },
   },
   {
-    "folke/snacks.nvim",
+    'folke/snacks.nvim',
     ---@type snacks.Config
     opts = {
       dashboard = {
         preset = {
-           header = [=[
+          header = [=[
           ⢀⣴⡾⠃⠄⠄⠄⠄⠄⠈⠺⠟⠛⠛⠛⠛⠻⢿⣿⣿⣿⣿⣶⣤⡀  
         ⢀⣴⣿⡿⠁⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⣸⣿⣿⣿⣿⣿⣿⣿⣷ 
       ⣴⣿⡿⡟⡼⢹⣷⢲⡶⣖⣾⣶⢄⠄⠄⠄⠄⠄⢀⣼⣿⢿⣿⣿⣿⣿⣿⣿⣿ 
@@ -1001,18 +1072,18 @@ require('lazy').setup({
   ⢸⠇⡜⣿⡟⠄⠄⠄⠈⠙⣿⣿⣿⣿⣿⣿⣿⣿⠟⣱⣻⣿⣿⣿⣿⣿⠟⠁⢳⠃⣿⣿⣿ 
     ⣰⡗⠹⣿⣄⠄⠄⠄⢀⣿⣿⣿⣿⣿⣿⠟⣅⣥⣿⣿⣿⣿⠿⠋  ⣾⡌⢠⣿⡿⠃ 
   ⠜⠋⢠⣷⢻⣿⣿⣶⣾⣿⣿⣿⣿⠿⣛⣥⣾⣿⠿⠟⠛⠉            
-  ]=]
+  ]=],
         },
         sections = {
           {
-            section = "header",
+            section = 'header',
           },
-          { icon = " ", title = "Keymaps", section = "keys", indent = 2, padding = 1 },
-          { pane = 1, icon = " ", title = "Projects", section = "projects", indent = 2, padding = 1 },
-          { section = "startup" },
+          { icon = ' ', title = 'Keymaps', section = 'keys', indent = 2, padding = 1 },
+          { pane = 1, icon = ' ', title = 'Projects', section = 'projects', indent = 2, padding = 1 },
+          { section = 'startup' },
         },
-      }
-    }
+      },
+    },
   },
   -- {
   --   "stevearc/aerial.nvim",
@@ -1043,7 +1114,7 @@ require('lazy').setup({
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
@@ -1082,7 +1153,6 @@ vim.keymap.set('n', 'K', vim.lsp.buf.hover, { desc = 'Hover Documentation' })
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
 
-
 -- Shift+Down: Start visual mode and select next line (normal mode)
 vim.keymap.set('n', '<S-Down>', 'vj', { desc = 'Visual select down' })
 -- Shift+Down: Extend visual selection down (visual mode)
@@ -1103,8 +1173,10 @@ vim.keymap.set('n', '<S-Right>', 'vl', { desc = 'Visual select right' })
 -- Shift+Right: Extend visual selection right (visual mode)
 vim.keymap.set('v', '<S-Right>', 'l', { desc = 'Extend selection right' })
 
-
 -- Ctrl+Down: Move half a page down (normal mode)
 vim.keymap.set('n', '<C-Down>', '<C-d>', { desc = 'Move half page down' })
 -- Ctrl+Up: Move half a page up (normal mode)
 vim.keymap.set('n', '<C-Up>', '<C-u>', { desc = 'Move half page up' })
+
+vim.o.termguicolors = true
+vim.cmd 'colorscheme '

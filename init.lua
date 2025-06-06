@@ -671,6 +671,12 @@ require('lazy').setup({
       }
     end,
   },
+  {
+    'numToStr/Comment.nvim',
+    opts = {
+      -- add any options here
+    },
+  },
   { -- Autoformat
     'stevearc/conform.nvim',
     event = { 'BufWritePre' },

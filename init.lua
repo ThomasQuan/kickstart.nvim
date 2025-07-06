@@ -246,13 +246,7 @@ require('lazy').setup({
   { -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
     opts = {
-      signs = {
-        add = { text = '+' },
-        change = { text = '~' },
-        delete = { text = '_' },
-        topdelete = { text = '‾' },
-        changedelete = { text = '~' },
-      },
+      current_line_blame = true,
     },
   },
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
@@ -621,8 +615,8 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         -- clangd = {},
-        -- gopls = {},
-        -- pyright = {},
+        gopls = {},
+        pyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -630,20 +624,7 @@ require('lazy').setup({
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
-        -- ts_ls = {},
-        --
-        pylsp = {
-          settings = {
-            pylsp = {
-              plugins = {
-                pycodestyle = { enabled = false, maxLineLength = 120 },
-                flake8 = { enabled = false },
-                mccabe = { enabled = false },
-                pyflakes = { enabled = false },
-              },
-            },
-          },
-        },
+        ts_ls = {},
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
@@ -984,98 +965,6 @@ require('lazy').setup({
     },
   },
   {
-    'kawre/leetcode.nvim',
-    dependencies = {
-      'nvim-telescope/telescope.nvim',
-      'nvim-lua/plenary.nvim',
-      'MunifTanjim/nui.nvim',
-    },
-    opts = {
-      ---@type string
-      arg = 'leetcode.nvim',
-
-      ---@type lc.lang
-      lang = 'cpp',
-
-      cn = { -- leetcode.cn
-        enabled = false,
-        translator = true,
-        translate_problems = true,
-      },
-
-      ---@type lc.storage
-      storage = {
-        home = vim.fn.stdpath 'data' .. '/leetcode',
-        cache = vim.fn.stdpath 'cache' .. '/leetcode',
-      },
-
-      ---@type table<string, boolean>
-      plugins = {
-        non_standalone = true,
-      },
-
-      ---@type boolean
-      logging = true,
-
-      injector = {}, ---@type table<lc.lang, lc.inject>
-
-      cache = {
-        update_interval = 60 * 60 * 24 * 7, ---@type integer 7 days
-      },
-
-      console = {
-        open_on_runcode = true,
-        dir = 'row',
-        size = {
-          width = '90%',
-          height = '75%',
-        },
-        result = {
-          size = '60%',
-        },
-        testcase = {
-          virt_text = true,
-          size = '40%',
-        },
-      },
-
-      description = {
-        position = 'left',
-        width = '40%',
-        show_stats = true,
-      },
-
-      ---@type lc.picker
-      picker = { provider = 'telescope' },
-
-      hooks = {
-        ---@type fun()[]
-        ['enter'] = {},
-
-        ---@type fun(question: lc.ui.Question)[]
-        ['question_enter'] = {},
-
-        ---@type fun()[]
-        ['leave'] = {},
-      },
-
-      keys = {
-        toggle = { 'q' },
-        confirm = { '<CR>' },
-        reset_testcases = 'r',
-        use_testcase = 'U',
-        focus_testcases = 'H',
-        focus_result = 'L',
-      },
-
-      ---@type lc.highlights
-      theme = {},
-
-      ---@type boolean
-      image_support = false,
-    },
-  },
-  {
     'folke/snacks.nvim',
     ---@type snacks.Config
     opts = {
@@ -1133,7 +1022,7 @@ require('lazy').setup({
   require 'kickstart.plugins.lint',
   require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
-  -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
+  require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.

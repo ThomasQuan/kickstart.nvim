@@ -49,3 +49,20 @@ vim.keymap.set('n', '<leader>a', '"_ciw<C-r>0<Esc>', {
   noremap = true,
   silent = true,
 })
+
+vim.keymap.set('n', 'K', function()
+  vim.lsp.buf.signature_help()
+end, { desc = 'LSP Signature Help' })
+
+vim.keymap.set('n', '<Esc>', function()
+  -- Clear the search result if any
+  vim.cmd 'nohlsearch'
+
+  -- Clear the floating window if any
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    local config = vim.api.nvim_win_get_config(win)
+    if config.relative ~= '' then -- floating window
+      vim.api.nvim_win_close(win, true)
+    end
+  end
+end, { desc = 'Close floating window' })

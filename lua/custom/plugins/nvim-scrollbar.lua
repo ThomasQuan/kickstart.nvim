@@ -1,4 +1,16 @@
-local colors = require('tokyonight.colors').setup()
+local colors = {
+  bg_highlight = '#1f1d2e',
+  love = '#eb6f92',
+  gold = '#f6c177',
+  rose = '#ebbcba',
+  iris = '#c4a7e7',
+  orange = '#f6c177',
+  error = '#eb6f92',
+  warning = '#f6c177',
+  info = '#c4a7e7',
+  hint = '#eb6f92',
+  purple = '#c4a7e7',
+}
 
 return {
   {
@@ -14,10 +26,10 @@ return {
         },
         marks = {
           Search = { color = colors.orange },
-          Error = { color = colors.error },
-          Warn = { color = colors.warning },
+          Error = { color = colors.love },
+          Warn = { color = colors.gold },
           Info = { color = colors.info },
-          Hint = { color = colors.hint },
+          Hint = { color = colors.iris },
           Misc = { color = colors.purple },
         },
       }

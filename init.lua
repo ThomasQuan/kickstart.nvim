@@ -1083,3 +1083,10 @@ vim.keymap.set('n', 'gl', vim.diagnostic.open_float)
 
 vim.o.termguicolors = true
 vim.cmd 'colorscheme '
+
+-- autosave
+vim.api.nvim_create_autocmd({ 'FocusLost' }, {
+  callback = function()
+    vim.cmd 'silent! update'
+  end,
+})

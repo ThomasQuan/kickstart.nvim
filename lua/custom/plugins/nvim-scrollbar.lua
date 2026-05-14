@@ -22,7 +22,7 @@ return {
         show = true,
         set_highlights = true,
         handle = {
-          color = colors.bg_highlight,
+          color = colors.gold,
         },
         marks = {
           Search = { color = colors.orange },

@@ -585,14 +585,14 @@ require('lazy').setup({
       })
 
       -- Change diagnostic symbols in the sign column (gutter)
-      -- if vim.g.have_nerd_font then
-      --   local signs = { ERROR = '', WARN = '', INFO = '', HINT = '' }
-      --   local diagnostic_signs = {}
-      --   for type, icon in pairs(signs) do
-      --     diagnostic_signs[vim.diagnostic.severity[type]] = icon
-      --   end
-      --   vim.diagnostic.config { signs = { text = diagnostic_signs } }
-      -- end
+      if vim.g.have_nerd_font then
+        local signs = { ERROR = '', WARN = '', INFO = '', HINT = '' }
+        local diagnostic_signs = {}
+        for type, icon in pairs(signs) do
+          diagnostic_signs[vim.diagnostic.severity[type]] = icon
+        end
+        vim.diagnostic.config { signs = { text = diagnostic_signs } }
+      end
 
       -- LSP servers and clients are able to communicate to each other what features they support.
       --  By default, Neovim doesn't support everything that is in the LSP specification.
@@ -627,8 +627,31 @@ require('lazy').setup({
         -- Python type checker (optional alongside pyright)
         -- mypy is NOT an LSP, so it does NOT go here
 
-        ts_ls = {},
-
+        ts_ls = {
+          settings = {
+            javascript = {
+              suggest = {
+                completeFunctionCalls = false,
+              },
+            },
+            typescript = {
+              suggest = {
+                completeFunctionCalls = false,
+              },
+            },
+            -- Add these:
+            javascriptreact = {
+              suggest = {
+                completeFunctionCalls = false,
+              },
+            },
+            typescriptreact = {
+              suggest = {
+                completeFunctionCalls = false,
+              },
+            },
+          },
+        },
         tailwindcss = {},
 
         shopify_theme_ls = {},
@@ -789,7 +812,7 @@ require('lazy').setup({
             luasnip.lsp_expand(args.body)
           end,
         },
-        completion = { completeopt = 'menu,menuone,noinsert' },
+        completion = { completeopt = 'menu,menuone,noinsert,noselect' },
 
         -- For an understanding of why these mappings were
         -- chosen, you will need to read `:help ins-completion`
@@ -913,6 +936,10 @@ require('lazy').setup({
   },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
+    dependencies = {
+      'windwp/nvim-ts-autotag',
+      opts = {},
+    },
     build = ':TSUpdate',
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`

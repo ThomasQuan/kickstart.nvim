@@ -576,7 +576,7 @@ require('lazy').setup({
           -- code, if the language server you are using supports them
           --
           -- This may be unwanted, since they displace some of your code
-          if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
+          if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
             map('<leader>th', function()
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
             end, '[T]oggle Inlay [H]ints')
@@ -653,7 +653,15 @@ require('lazy').setup({
           },
         },
         tailwindcss = {},
-
+        eslint = {
+          settings = {
+            workingDirectory = { mode = 'auto' },
+            format = true,
+          },
+          on_attach = function(client)
+            client.server_capabilities.documentFormattingProvider = false
+          end,
+        },
         shopify_theme_ls = {},
 
         lua_ls = {
@@ -760,6 +768,10 @@ require('lazy').setup({
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
+        javascript = { 'eslint_d', 'prettierd' },
+        typescript = { 'eslint_d', 'prettierd' },
+        javascriptreact = { 'eslint_d', 'prettierd' },
+        typescriptreact = { 'eslint_d', 'prettierd' },
       },
     },
   },

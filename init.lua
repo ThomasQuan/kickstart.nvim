@@ -475,7 +475,46 @@ require('lazy').setup({
         -- Python type checker (optional alongside pyright)
         -- mypy is NOT an LSP, so it does NOT go here
 
-        ts_ls = {},
+        ts_ls = {
+          gopls = {
+            settings = {
+              gopls = {
+                gofumpt = true,
+                usePlaceholders = true,
+                completeUnimported = true,
+                staticcheck = true,
+              },
+            },
+          },
+
+          pyright = {},
+
+          -- Python type checker (optional alongside pyright)
+          -- mypy is NOT an LSP, so it does NOT go here
+
+          ts_ls = {},
+          tailwindcss = {},
+          eslint = {
+            settings = {
+              workingDirectory = { mode = 'auto' },
+              format = true,
+            },
+            on_attach = function(client)
+              client.server_capabilities.documentFormattingProvider = false
+            end,
+          },
+          shopify_theme_ls = {},
+
+          lua_ls = {
+            settings = {
+              Lua = {
+                completion = {
+                  callSnippet = 'Replace',
+                },
+              },
+            },
+          },
+        },
         tailwindcss = {},
         eslint = {
           settings = {
@@ -747,106 +786,155 @@ require('lazy').setup({
       },
     },
   },
-  { -- Highlight, edit, and navigate code
+  {
+    -- Make sure you have install tree-sitter CLI (e.g: homebrew)
     'nvim-treesitter/nvim-treesitter',
     dependencies = {
-      'windwp/nvim-ts-autotag',
-      opts = {},
+      {
+        'nvim-treesitter/nvim-treesitter-context',
+        opts = {
+          max_lines = 4,
+          multiline_threshold = 2,
+        },
+      },
+      {
+        'windwp/nvim-ts-autotag',
+        config = function()
+          require('nvim-ts-autotag').setup()
+        end,
+      },
     },
+    lazy = false,
+    branch = 'main',
     build = ':TSUpdate',
-    main = 'nvim-treesitter.configs', -- Sets main module to use for opts
-    -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
-    opts = {
-      ensure_installed = {
-        'bash',
-        'c',
-        'diff',
-        'javascript',
-        'json',
-        'lua',
-        'luadoc',
-        'markdown',
-        'markdown_inline',
-        'query',
-        'vim',
-        'vimdoc',
-        'python',
-        'go',
-        'html',
-        'liquid',
-      },
-      -- Autoinstall languages that are not installed
-      auto_install = true,
-      highlight = {
-        enable = true,
-        -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
-        --  If you are experiencing weird indenting issues, add the language to
-        --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-        additional_vim_regex_highlighting = { 'ruby' },
-        disable = { 'python' },
-      },
-      indent = { enable = true, disable = { 'ruby', 'python' } },
-      textobjects = {
-        select = {
-          enable = true,
-          lookahead = true,
-          keymaps = {
-            ['af'] = '@function.outer',
-            ['if'] = '@function.inner',
-            ['ac'] = '@class.outer',
-            ['ic'] = '@class.inner',
-          },
-        },
-        move = {
-          enable = true,
-          set_jumps = true, -- usually you want this true for jump list
-          goto_next_start = {
-            [']f'] = '@function.outer',
-            [']c'] = '@class.outer',
-            [']p'] = '@parameter.inner',
-            [']m'] = '@method.outer',
-          },
-          goto_previous_start = {
-            ['[f'] = '@function.outer',
-            ['[c'] = '@class.outer',
-            ['[p'] = '@parameter.inner',
-            ['[m'] = '@method.outer',
-          },
-        },
-      },
-    },
-    -- There are additional nvim-treesitter modules that you can use to interact
-    -- with nvim-treesitter. You should go explore a few and see what interests you:
-    --
-    --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
-    --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
-    --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
-  },
-  {
-    'nvim-treesitter/nvim-treesitter-textobjects',
-    dependencies = { 'nvim-treesitter/nvim-treesitter' },
-    after = 'nvim-treesitter',
-    textobjects = {
-      move = {
-        enable = true,
-        set_jumps = true,
-        goto_next_start = {
-          [']a'] = '@parameter.inner',
-        },
-        goto_previous_start = {
-          ['[a'] = '@parameter.inner',
-        },
-      },
-    },
+    config = function()
+      local ts = require 'nvim-treesitter'
+
+      local parsers_loaded = {}
+      local parsers_pending = {}
+      local parsers_failed = {}
+
+      local ns = vim.api.nvim_create_namespace 'treesitter.async'
+
+      local function start(buf, lang)
+        local ok = pcall(vim.treesitter.start, buf, lang)
+        if ok then
+          vim.bo[buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+        end
+        return ok
+      end
+
+      vim.api.nvim_create_autocmd('User', {
+        pattern = 'LazyDone',
+        once = true,
+        callback = function()
+          ts.install({
+            'bash',
+            'c',
+            'diff',
+            'go',
+            'html',
+            'javascript',
+            'json',
+            'liquid',
+            'lua',
+            'luadoc',
+            'markdown',
+            'markdown_inline',
+            'python',
+            'query',
+            'vim',
+            'vimdoc',
+          }, {
+            max_jobs = 8,
+          })
+        end,
+      })
+
+      vim.api.nvim_set_decoration_provider(ns, {
+        on_start = vim.schedule_wrap(function()
+          if #parsers_pending == 0 then
+            return false
+          end
+          for _, data in ipairs(parsers_pending) do
+            if vim.api.nvim_buf_is_valid(data.buf) then
+              if start(data.buf, data.lang) then
+                parsers_loaded[data.lang] = true
+              else
+                parsers_failed[data.lang] = true
+              end
+            end
+          end
+          parsers_pending = {}
+        end),
+      })
+
+      local group = vim.api.nvim_create_augroup('TreesitterSetup', { clear = true })
+
+      local ignore_filetypes = {
+        'checkhealth',
+        'lazy',
+        'mason',
+        'snacks_dashboard',
+        'snacks_notif',
+        'snacks_win',
+      }
+
+      vim.api.nvim_create_autocmd('FileType', {
+        group = group,
+        desc = 'Enable treesitter highlighting and indentation (non-blocking)',
+        callback = function(event)
+          if vim.tbl_contains(ignore_filetypes, event.match) then
+            return
+          end
+
+          local lang = vim.treesitter.language.get_lang(event.match) or event.match
+          local buf = event.buf
+
+          if parsers_failed[lang] then
+            return
+          end
+
+          if parsers_loaded[lang] then
+            start(buf, lang)
+          else
+            table.insert(parsers_pending, { buf = buf, lang = lang })
+          end
+
+          ts.install { lang }
+        end,
+      })
+
+      -- Keymaps to replace nvim-treesitter-textobjects
+      local map = vim.keymap.set
+      local opts = { noremap = true, silent = true }
+
+      map({ 'n', 'x', 'o' }, ']f', function()
+        require('nvim-treesitter.textobjects.move').goto_next_start('@function.outer', 'textobjects')
+      end, opts)
+      map({ 'n', 'x', 'o' }, '[f', function()
+        require('nvim-treesitter.textobjects.move').goto_previous_start('@function.outer', 'textobjects')
+      end, opts)
+      map({ 'n', 'x', 'o' }, ']c', function()
+        require('nvim-treesitter.textobjects.move').goto_next_start('@class.outer', 'textobjects')
+      end, opts)
+      map({ 'n', 'x', 'o' }, '[c', function()
+        require('nvim-treesitter.textobjects.move').goto_previous_start('@class.outer', 'textobjects')
+      end, opts)
+      map({ 'n', 'x', 'o' }, ']m', function()
+        require('nvim-treesitter.textobjects.move').goto_next_start('@method.outer', 'textobjects')
+      end, opts)
+      map({ 'n', 'x', 'o' }, '[m', function()
+        require('nvim-treesitter.textobjects.move').goto_previous_start('@method.outer', 'textobjects')
+      end, opts)
+    end,
   },
   -- {
-  --   "stevearc/aerial.nvim",
-  --   opts = {
-  --     layout = {
-  --       min_width = 30,
-  --       default_direction = "prefer_right",
-  --     },
-  --   },
+  --   'windwp/nvim-ts-autotag',
+  --   lazy = false,
+  --   config = function()
+  --     require('nvim-ts-autotag').setup()
+  --   end,
   -- },
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and

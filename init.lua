@@ -627,31 +627,7 @@ require('lazy').setup({
         -- Python type checker (optional alongside pyright)
         -- mypy is NOT an LSP, so it does NOT go here
 
-        ts_ls = {
-          settings = {
-            javascript = {
-              suggest = {
-                completeFunctionCalls = false,
-              },
-            },
-            typescript = {
-              suggest = {
-                completeFunctionCalls = false,
-              },
-            },
-            -- Add these:
-            javascriptreact = {
-              suggest = {
-                completeFunctionCalls = false,
-              },
-            },
-            typescriptreact = {
-              suggest = {
-                completeFunctionCalls = false,
-              },
-            },
-          },
-        },
+        ts_ls = {},
         tailwindcss = {},
         eslint = {
           settings = {
@@ -792,17 +768,17 @@ require('lazy').setup({
           end
           return 'make install_jsregexp'
         end)(),
-        dependencies = {
-          -- `friendly-snippets` contains a variety of premade snippets.
-          --    See the README about individual language/framework/plugin snippets:
-          --    https://github.com/rafamadriz/friendly-snippets
-          {
-            'rafamadriz/friendly-snippets',
-            config = function()
-              require('luasnip.loaders.from_vscode').lazy_load()
-            end,
-          },
-        },
+        -- dependencies = {
+        --   -- `friendly-snippets` contains a variety of premade snippets.
+        --   --    See the README about individual language/framework/plugin snippets:
+        --   --    https://github.com/rafamadriz/friendly-snippets
+        --   {
+        --     'rafamadriz/friendly-snippets',
+        --     config = function()
+        --       require('luasnip.loaders.from_vscode').lazy_load()
+        --     end,
+        --   },
+        -- },
       },
       'saadparwaiz1/cmp_luasnip',
 

@@ -790,6 +790,7 @@ require('lazy').setup({
     -- Make sure you have install tree-sitter CLI (e.g: homebrew)
     'nvim-treesitter/nvim-treesitter',
     dependencies = {
+      'nvim-treesitter/nvim-treesitter-textobjects', -- add this
       {
         'nvim-treesitter/nvim-treesitter-context',
         opts = {
@@ -809,6 +810,7 @@ require('lazy').setup({
     build = ':TSUpdate',
     config = function()
       local ts = require 'nvim-treesitter'
+      require('nvim-treesitter-textobjects').setup() -- add it here
 
       local parsers_loaded = {}
       local parsers_pending = {}
@@ -871,36 +873,42 @@ require('lazy').setup({
 
       local group = vim.api.nvim_create_augroup('TreesitterSetup', { clear = true })
 
-      local ignore_filetypes = {
-        'checkhealth',
-        'lazy',
-        'mason',
-        'snacks_dashboard',
-        'snacks_notif',
-        'snacks_win',
+      local supported_langs = {
+        'bash',
+        'c',
+        'diff',
+        'go',
+        'html',
+        'javascript',
+        'json',
+        'liquid',
+        'lua',
+        'luadoc',
+        'markdown',
+        'markdown_inline',
+        'python',
+        'query',
+        'vim',
+        'vimdoc',
       }
 
       vim.api.nvim_create_autocmd('FileType', {
         group = group,
         desc = 'Enable treesitter highlighting and indentation (non-blocking)',
         callback = function(event)
-          if vim.tbl_contains(ignore_filetypes, event.match) then
+          local lang = vim.treesitter.language.get_lang(event.match) or event.match
+          if not vim.tbl_contains(supported_langs, lang) then
             return
           end
-
-          local lang = vim.treesitter.language.get_lang(event.match) or event.match
           local buf = event.buf
-
           if parsers_failed[lang] then
             return
           end
-
           if parsers_loaded[lang] then
             start(buf, lang)
           else
             table.insert(parsers_pending, { buf = buf, lang = lang })
           end
-
           ts.install { lang }
         end,
       })
@@ -910,22 +918,22 @@ require('lazy').setup({
       local opts = { noremap = true, silent = true }
 
       map({ 'n', 'x', 'o' }, ']f', function()
-        require('nvim-treesitter.textobjects.move').goto_next_start('@function.outer', 'textobjects')
+        require('nvim-treesitter-textobjects.move').goto_next_start('@function.outer', 'textobjects')
       end, opts)
       map({ 'n', 'x', 'o' }, '[f', function()
-        require('nvim-treesitter.textobjects.move').goto_previous_start('@function.outer', 'textobjects')
+        require('nvim-treesitter-textobjects.move').goto_previous_start('@function.outer', 'textobjects')
       end, opts)
       map({ 'n', 'x', 'o' }, ']c', function()
-        require('nvim-treesitter.textobjects.move').goto_next_start('@class.outer', 'textobjects')
+        require('nvim-treesitter-textobjects.move').goto_next_start('@class.outer', 'textobjects')
       end, opts)
       map({ 'n', 'x', 'o' }, '[c', function()
-        require('nvim-treesitter.textobjects.move').goto_previous_start('@class.outer', 'textobjects')
+        require('nvim-treesitter-textobjects.move').goto_previous_start('@class.outer', 'textobjects')
       end, opts)
       map({ 'n', 'x', 'o' }, ']m', function()
-        require('nvim-treesitter.textobjects.move').goto_next_start('@method.outer', 'textobjects')
+        require('nvim-treesitter-textobjects.move').goto_next_start('@method.outer', 'textobjects')
       end, opts)
       map({ 'n', 'x', 'o' }, '[m', function()
-        require('nvim-treesitter.textobjects.move').goto_previous_start('@method.outer', 'textobjects')
+        require('nvim-treesitter-textobjects.move').goto_previous_start('@method.outer', 'textobjects')
       end, opts)
     end,
   },

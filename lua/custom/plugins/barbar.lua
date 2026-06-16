@@ -46,32 +46,26 @@ return {
         button = '󰐃',
       },
     },
-
-    sidebar_filetypes = {
-      ['neo-tree'] = {
-        event = 'BufWipeout',
-        text = 'Explorer',
-        align = 'left',
-      },
-    },
   },
 
   keys = {
     { '<S-h>', '<Cmd>BufferPrevious<CR>', desc = 'Prev Buffer' },
     { '<S-l>', '<Cmd>BufferNext<CR>', desc = 'Next Buffer' },
+    { '<C-h>', '<Cmd>BufferMovePrevious<CR>', desc = 'Move Buffer Left' },
+    { '<C-l>', '<Cmd>BufferMoveNext<CR>', desc = 'Move Buffer Right' },
 
     { '<leader>bp', '<Cmd>BufferPin<CR>', desc = 'Pin Buffer' },
 
     { '<leader>bc', '<Cmd>BufferClose<CR>', desc = 'Close Buffer' },
 
-    { '<C-1>', '<Cmd>BufferGoto 1<CR>', desc = 'Buffer 1' },
-    { '<C-2>', '<Cmd>BufferGoto 2<CR>', desc = 'Buffer 2' },
-    { '<C-3>', '<Cmd>BufferGoto 3<CR>', desc = 'Buffer 3' },
-    { '<C-4>', '<Cmd>BufferGoto 4<CR>', desc = 'Buffer 4' },
-    { '<C-5>', '<Cmd>BufferGoto 5<CR>', desc = 'Buffer 5' },
-    { '<C-6>', '<Cmd>BufferGoto 6<CR>', desc = 'Buffer 6' },
-    { '<C-7>', '<Cmd>BufferGoto 7<CR>', desc = 'Buffer 7' },
-    { '<C-8>', '<Cmd>BufferGoto 8<CR>', desc = 'Buffer 8' },
-    { '<C-9>', '<Cmd>BufferGoto 9<CR>', desc = 'Buffer 9' },
+    { '<leader>1', '<Cmd>BufferGoto 1<CR>', desc = 'Buffer 1' },
+    { '<leader>2', '<Cmd>BufferGoto 2<CR>', desc = 'Buffer 2' },
+    { '<leader>3', '<Cmd>BufferGoto 3<CR>', desc = 'Buffer 3' },
+    { '<leader>4', '<Cmd>BufferGoto 4<CR>', desc = 'Buffer 4' },
+    { '<leader>5', '<Cmd>BufferGoto 5<CR>', desc = 'Buffer 5' },
+    { '<leader>6', '<Cmd>BufferGoto 6<CR>', desc = 'Buffer 6' },
+    { '<leader>7', '<Cmd>BufferGoto 7<CR>', desc = 'Buffer 7' },
+    { '<leader>8', '<Cmd>BufferGoto 8<CR>', desc = 'Buffer 8' },
+    { '<leader>9', '<Cmd>BufferGoto 9<CR>', desc = 'Buffer 9' },
   },
 }

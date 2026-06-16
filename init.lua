@@ -1041,3 +1041,6 @@ vim.api.nvim_create_autocmd({ 'FocusLost' }, {
     vim.cmd 'silent! update'
   end,
 })
+
+-- buffer tab
+vim.opt.showtabline = 2

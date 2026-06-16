@@ -14,7 +14,13 @@ return {
     { '\\', ':Neotree reveal<CR>', desc = 'NeoTree reveal', silent = true },
   },
   opts = {
+    enable_git_status = true, -- Adds indicator glyphs next to files
+    git_status_async = true,
     filesystem = {
+      follow_current_file = {
+        enabled = true,
+        leave_dirs_open = false,
+      },
       window = {
         mappings = {
           ['\\'] = 'close_window',

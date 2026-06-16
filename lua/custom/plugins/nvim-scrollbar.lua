@@ -15,6 +15,7 @@ local colors = {
 return {
   {
     'petertriho/nvim-scrollbar',
+    cond = not vim.g.vscode,
     event = 'BufReadPost',
     config = function()
       require('scrollbar').setup {

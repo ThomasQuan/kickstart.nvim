@@ -1,7 +1,8 @@
 return {
   {
     'folke/snacks.nvim',
-    ---@type snacks.Config
+    cond = not vim.g.vscode,
+    ---@type snacks.config
     opts = {
       terminal = {
         win = {

@@ -475,46 +475,7 @@ require('lazy').setup({
         -- Python type checker (optional alongside pyright)
         -- mypy is NOT an LSP, so it does NOT go here
 
-        ts_ls = {
-          gopls = {
-            settings = {
-              gopls = {
-                gofumpt = true,
-                usePlaceholders = true,
-                completeUnimported = true,
-                staticcheck = true,
-              },
-            },
-          },
-
-          pyright = {},
-
-          -- Python type checker (optional alongside pyright)
-          -- mypy is NOT an LSP, so it does NOT go here
-
-          ts_ls = {},
-          tailwindcss = {},
-          eslint = {
-            settings = {
-              workingDirectory = { mode = 'auto' },
-              format = true,
-            },
-            on_attach = function(client)
-              client.server_capabilities.documentFormattingProvider = false
-            end,
-          },
-          shopify_theme_ls = {},
-
-          lua_ls = {
-            settings = {
-              Lua = {
-                completion = {
-                  callSnippet = 'Replace',
-                },
-              },
-            },
-          },
-        },
+        ts_ls = {},
         tailwindcss = {},
         eslint = {
           settings = {
